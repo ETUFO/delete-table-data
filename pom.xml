@@ -8,6 +8,11 @@
     <artifactId>delete-table-data</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
+
+    <properties>
+        <delete-table-data.version>1.0.0</delete-table-data.version>
+    </properties>
+
     <modules>
         <module>delete-table-data-starter</module>
         <module>delete-table-data-core</module>
@@ -52,7 +57,13 @@
             <artifactId>hutool-all</artifactId>
             <version>5.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+        </dependency>
     </dependencies>
+
     <distributionManagement>
         <repository>
             <id>releases</id>

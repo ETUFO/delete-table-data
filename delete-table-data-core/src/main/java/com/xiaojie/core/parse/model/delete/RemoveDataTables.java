@@ -1,6 +1,5 @@
-package com.xiaojie.core.parse.model;
+package com.xiaojie.core.parse.model.delete;
 
-import com.xiaojie.core.parse.model.RemoveDataTable;
 import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlElement;

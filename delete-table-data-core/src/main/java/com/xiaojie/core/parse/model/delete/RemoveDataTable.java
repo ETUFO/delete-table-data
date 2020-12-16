@@ -1,6 +1,4 @@
-package com.xiaojie.core.parse.model;
-
-import com.xiaojie.core.parse.model.DependTable;
+package com.xiaojie.core.parse.model.delete;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

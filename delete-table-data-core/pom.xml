@@ -2,6 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+
     <parent>
         <artifactId>delete-table-data</artifactId>
         <groupId>com.xiaojie</groupId>
@@ -10,6 +12,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>delete-table-data-core</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.xiaojie</groupId>
+            <artifactId>delete-table-data-starter</artifactId>
+            <version>${delete-table-data.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

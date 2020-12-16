@@ -1,4 +1,4 @@
-package com.xiaojie.core.parse.model;
+package com.xiaojie.core.parse.model.delete;
 
 import lombok.ToString;
 
