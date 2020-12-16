@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * 生成删除据所需要的的参数
+ * 生成删除据所需要的的参数1
  *
  * @author wangye
  * @classname GenerateDeleteParam
