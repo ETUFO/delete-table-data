@@ -24,6 +24,7 @@ public class RemoveDataTable {
     @XmlElement(name = "depend-table")
     private DependTable dependTable;
 
+
     @XmlTransient
     public String getTableName() {
         return tableName;
