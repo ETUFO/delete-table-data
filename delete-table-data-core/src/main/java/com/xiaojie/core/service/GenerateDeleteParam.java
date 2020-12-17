@@ -1,19 +1,27 @@
 package com.xiaojie.core.service;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.xiaojie.autoconfigure.DeleteTableDataProperties;
 import com.xiaojie.core.cache.Cache;
 import com.xiaojie.core.dao.DataBaseOperation;
 import com.xiaojie.core.parse.RemoveExamDataXmlParse;
+import com.xiaojie.core.parse.model.DependTable;
+import com.xiaojie.core.parse.model.DependTables;
 import com.xiaojie.core.parse.model.RemoveDataTable;
 import com.xiaojie.core.parse.model.RemoveDataTables;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 生成删除据所需要的的参数
@@ -38,21 +46,31 @@ public class GenerateDeleteParam {
         //获取删除表模型
         RemoveDataTables removeDataTables = getRemoveDataTables(fileName);
         List<RemoveDataTable> tableList = removeDataTables.getRemoveDataTableList();
-//        //整合数据表之间依赖关系
-//        Map<String, List<RemoveDataTable>> dependTableMap = tableList.stream().filter(table -> {
-//            return table.getDependTable() != null;
-//        }).collect(Collectors.groupingBy(table -> {
-//            return table.getDependTable().getTableName();
-//        }));
-//        //获取要删除的数据
-//        Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
+        //整合数据表之间依赖关系
+        Map<String, List<RemoveDataTable>> dependTableMap = Maps.newHashMap();
+        for (RemoveDataTable removeDataTable : tableList) {
+            List<DependTable> dependTableList = Optional.ofNullable(removeDataTable.getQueryDependTables())
+                    .map(dependTables -> dependTables.getDependTableList()).orElse(new ArrayList<>());
+            dependTableList.addAll(Optional.ofNullable(removeDataTable.getDeleteDependTables())
+                    .map(dependTables -> dependTables.getDependTableList()).orElse(new ArrayList<>()));
+            for (DependTable dependTable : dependTableList) {
+                List<RemoveDataTable> list = dependTableMap.get(dependTable.getTableName());
+                if (list == null) {
+                    list = Lists.newArrayList();
+                    dependTableMap.put(dependTable.getTableName(), list);
+                }
+                list.add(removeDataTable);
+            }
+        }
+        //获取要删除的数据
+        Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
         //删除数据
 
         return null;
     }
 
 
-//    private Map<String, List<Map>> getRemoveData(Map param, List<RemoveDataTable> tableList, Map<String, List<RemoveDataTable>> dependTableMap) {
+    private Map<String, List<Map>> getRemoveData(Map param, List<RemoveDataTable> tableList, Map<String, List<RemoveDataTable>> dependTableMap) {
 //        //TODO 将数据放入ThreadLocal中
 //        //获取要删除的数据
 //        Map<String, List<Map>> removeDataMap = Maps.newHashMap();
@@ -62,7 +80,7 @@ public class GenerateDeleteParam {
 //            count = removeDataMap.size();
 //            for (RemoveDataTable table : tableList) {
 //                if (removeDataMap.containsKey(table.getTableName())) continue;
-//                boolean flag = StringUtils.isNotBlank(table.getFieldName()) && StringUtils.isNotBlank(table.getQueryParamName());
+//                boolean flag = Optional.of(table.getQueryParams()).map(queryParams -> queryParams.getParamList() != null).orElse(false);
 //                //不依赖其他表,根据参数进行查询数据
 //                if (flag) {
 //                    List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
@@ -71,7 +89,7 @@ public class GenerateDeleteParam {
 //                        List<Map> list = dataBaseOperation.selectData(table.getTableName(), "id", StrUtil.toUnderlineCase(table.getFieldName()), param.get(table.getQueryParamName()));
 //                        removeDataMap.put(table.getTableName(), list);
 //                    } else {
-//                        Set<String> fieldSet = getDependFields(dependTableList);
+//                        Set<String> fieldSet = getDependFields(table.getTableName(), dependTableList);
 //                        if (CollectionUtil.isEmpty(fieldSet)) {
 //                            String error = String.format("配置文件中缺少depend-field-name依赖字段属性");
 //                            throw new RuntimeException(error);
@@ -83,6 +101,10 @@ public class GenerateDeleteParam {
 //                    }
 //                } else {
 //                    //根据配置通过依赖表中字段作为查询条件
+//                    List<DependTable> dependTableList1 = getDependTableList(table);
+//                    for (DependTable dependTable : dependTableList1) {
+//                        removeDataMap.containsKey(dependTable.getTableName());
+//                    }
 //                    if (!removeDataMap.containsKey(table.getDependTable().getTableName())) {
 //                        continue;
 //                    }
@@ -109,7 +131,8 @@ public class GenerateDeleteParam {
 //            }
 //        }
 //        return removeDataMap;
-//    }
+        return null;
+    }
 
     private RemoveDataTables getRemoveDataTables(String fileName) {
         String cacheName = deleteTableDataProperties.getCache();
@@ -121,18 +144,43 @@ public class GenerateDeleteParam {
         } else {
             removeDataTables = RemoveExamDataXmlParse.getRemoveDataTables(fileName);
         }
-        if(removeDataTables == null){
+        if (removeDataTables == null) {
             throw new RuntimeException("获取配置文件错误");
         }
         return removeDataTables;
     }
 
 
-//    private Set<String> getDependFields(List<RemoveDataTable> dependTableList) {
-//        Set<String> fieldSet = dependTableList.stream().map(removeTable -> {
-//            return removeTable.getDependTable().getDependFieldName();
+    private Set<String> getDependFields(String tableName, List<RemoveDataTable> dependTableList) {
+//        dependTableList.stream().map(removeTable -> {
+//            List<DependTable> list = Optional.ofNullable(removeTable.getQueryDependTables())
+//                    .map(dependTables -> Optional.ofNullable(dependTables.getDependTableList())
+//                            .map(dependTableList1->dependTableList1).orElse(Lists.newArrayList())).orElse(Lists.newArrayList());
+//            list.addAll(Optional.ofNullable(removeTable.getDeleteDependTables())
+//                    .map(dependTables -> Optional.ofNullable(dependTables.getDependTableList())
+//                            .map(dependTableList1->dependTableList1).orElse(Lists.newArrayList())).orElse(Lists.newArrayList()));
+//
+//            return list;
+//        }).filter(list->{
+//           for (DependTable dependTable : list) {
+//
+//           }
 //        }).collect(Collectors.toSet());
 //        fieldSet.add("id");
 //        return fieldSet;
-//    }
+        return null;
+    }
+
+    private List<DependTable> getDependTableList(RemoveDataTable table){
+        List<DependTable> list = Lists.newArrayList();
+        List<DependTable> list2 = Lists.newArrayList();
+        DependTables queryDependTables = table.getQueryDependTables();
+        list = queryDependTables == null ? list :
+                     Optional.ofNullable(queryDependTables.getDependTableList()).map(dependList->dependList).orElse(Lists.newArrayList());
+        DependTables deleteDependTables = table.getDeleteDependTables();
+        list2 = deleteDependTables == null ? list2 :
+                Optional.ofNullable(deleteDependTables.getDependTableList()).map(dependList->dependList).orElse(Lists.newArrayList());
+        list.addAll(list2);
+        return list;
+    }
 }

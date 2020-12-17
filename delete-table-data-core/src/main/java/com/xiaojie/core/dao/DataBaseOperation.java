@@ -12,15 +12,9 @@ import java.util.Map;
  **/
 public interface DataBaseOperation {
 
+    List<Map> selectData(String tableName, String fields, String paramName, Object paramValue);
 
-    List<Map> selectData(
-            String tableName, String fields,
-            String paramName, Object paramValue);
-
-    List<Map> selectData(
-            String tableName,
-            String fields,
-            List<Param> params);
+    List<Map> selectData(String tableName, String fields, List<Param> params);
 
     int delete(String tableName, String paramName, Object paramValue);
 
