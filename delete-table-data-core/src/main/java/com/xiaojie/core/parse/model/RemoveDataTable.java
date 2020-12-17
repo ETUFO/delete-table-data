@@ -1,9 +1,8 @@
-package com.xiaojie.core.parse.model.delete;
+package com.xiaojie.core.parse.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.List;
 
 /**
  * 删除的表

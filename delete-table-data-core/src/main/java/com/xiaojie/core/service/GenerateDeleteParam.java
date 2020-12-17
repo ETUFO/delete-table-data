@@ -1,28 +1,19 @@
 package com.xiaojie.core.service;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.xiaojie.autoconfigure.DeleteTableDataProperties;
 import com.xiaojie.core.cache.Cache;
 import com.xiaojie.core.dao.DataBaseOperation;
 import com.xiaojie.core.parse.RemoveExamDataXmlParse;
-import com.xiaojie.core.parse.model.delete.RemoveDataTable;
-import com.xiaojie.core.parse.model.delete.RemoveDataTables;
+import com.xiaojie.core.parse.model.RemoveDataTable;
+import com.xiaojie.core.parse.model.RemoveDataTables;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 生成删除据所需要的的参数

@@ -1,4 +1,4 @@
-package com.xiaojie.core.parse.model.delete;
+package com.xiaojie.core.parse.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
@@ -6,11 +6,10 @@ import java.io.Serializable;
 
 /**
  * @author wangye
- * @classname DeleteExtensionClass
- * @date 2020/12/17 14:20
+ * @classname QueryExtensionClass
+ * @date 2020/12/17 14:37
  **/
-public class DeleteExtensionClass implements Serializable {
-
+public class QueryExtensionClass implements Serializable {
     @XmlAttribute(name = "bean-name")
     private String beanName;
 

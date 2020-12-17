@@ -1,7 +1,5 @@
 package com.xiaojie.core.dao;
 
-import com.xiaojie.core.parse.model.delete.RemoveDataTable;
-
 import java.util.List;
 import java.util.Map;
 

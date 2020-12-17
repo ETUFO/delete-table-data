@@ -1,8 +1,7 @@
 package com.xiaojie.core.parse;
 
 import cn.hutool.core.io.FileUtil;
-import com.xiaojie.core.parse.model.delete.RemoveDataTables;
-import jdk.nashorn.internal.ir.ThrowNode;
+import com.xiaojie.core.parse.model.RemoveDataTables;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.ClassPathResource;
@@ -14,7 +13,7 @@ import java.io.StringReader;
 import java.util.Optional;
 
 /**
- * 解析xml1
+ * 解析xml
  * @author wangye
  * @classname XmlParse
  * @date 2020/9/16 13:54

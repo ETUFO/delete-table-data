@@ -1,4 +1,4 @@
-package com.xiaojie.core.parse.model.delete;
+package com.xiaojie.core.parse.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
