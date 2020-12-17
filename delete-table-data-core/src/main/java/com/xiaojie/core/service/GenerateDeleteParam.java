@@ -47,77 +47,78 @@ public class GenerateDeleteParam {
         //获取删除表模型
         RemoveDataTables removeDataTables = getRemoveDataTables(fileName);
         List<RemoveDataTable> tableList = removeDataTables.getRemoveDataTableList();
-        //整合数据表之间依赖关系
-        Map<String, List<RemoveDataTable>> dependTableMap = tableList.stream().filter(table -> {
-            return table.getDependTable() != null;
-        }).collect(Collectors.groupingBy(table -> {
-            return table.getDependTable().getTableName();
-        }));
-        //获取要删除的数据
-        Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
+//        //整合数据表之间依赖关系
+//        Map<String, List<RemoveDataTable>> dependTableMap = tableList.stream().filter(table -> {
+//            return table.getDependTable() != null;
+//        }).collect(Collectors.groupingBy(table -> {
+//            return table.getDependTable().getTableName();
+//        }));
+//        //获取要删除的数据
+//        Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
         //删除数据
-        
+
         return null;
     }
 
 
-    private Map<String, List<Map>> getRemoveData(Map param, List<RemoveDataTable> tableList, Map<String, List<RemoveDataTable>> dependTableMap) {
-        //获取要删除的数据
-        Map<String, List<Map>> removeDataMap = Maps.newHashMap();
-        //避免死循环
-        int count = -1;
-        while (removeDataMap.size() < tableList.size() && count != removeDataMap.size()) {
-            count = removeDataMap.size();
-            for (RemoveDataTable table : tableList) {
-                if (removeDataMap.containsKey(table.getTableName())) continue;
-                boolean flag = StringUtils.isNotBlank(table.getFieldName()) && StringUtils.isNotBlank(table.getQueryParamName());
-                //不依赖其他表,根据参数进行查询数据
-                if (flag) {
-                    List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
-                    //判断当前表是否被依赖
-                    if (CollectionUtil.isEmpty(dependTableList)) {
-                        List<Map> list = dataBaseOperation.selectData(table.getTableName(), "id", StrUtil.toUnderlineCase(table.getFieldName()), param.get(table.getQueryParamName()));
-                        removeDataMap.put(table.getTableName(), list);
-                    } else {
-                        Set<String> fieldSet = getDependFields(dependTableList);
-                        if (CollectionUtil.isEmpty(fieldSet)) {
-                            String error = String.format("配置文件中缺少depend-field-name依赖字段属性");
-                            throw new RuntimeException(error);
-                        } else {
-                            List<Map> list = dataBaseOperation.selectData(table.getTableName(),
-                                    CollectionUtil.join(fieldSet, ","), StrUtil.toUnderlineCase(table.getFieldName()), param.get(table.getQueryParamName()));
-                            removeDataMap.put(table.getTableName(), list);
-                        }
-                    }
-                } else {
-                    //根据配置通过依赖表中字段作为查询条件
-                    if (!removeDataMap.containsKey(table.getDependTable().getTableName())) {
-                        continue;
-                    }
-                    //判断当前表是否被依赖，生成要查询的字段
-                    List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
-                    Set<String> fiedSet = CollectionUtil.isNotEmpty(dependTableList) ? getDependFields(dependTableList) : Stream.of("id").collect(Collectors.toSet());
-                    //获取当前表查询条件值
-                    List<Map> list = removeDataMap.get(table.getDependTable().getTableName());
-                    List<Object> paramValueList = list == null ? null : list.stream().map(map -> map.get(table.getDependTable().getDependFieldName())).collect(Collectors.toList());
-                    if (CollectionUtil.isNotEmpty(paramValueList)) {
-                        //查询条件超过MAX_COUNT分多次查询
-                        int size = paramValueList.size();
-                        List<Map> dataList = Lists.newArrayList();
-                        for (int i = 0; i < size; i += MAX_COUNT) {
-                            List<Object> subParamList = paramValueList.subList(i, i + MAX_COUNT > size ? size : i + MAX_COUNT);
-                            dataList.addAll(dataBaseOperation.selectData(table.getTableName(),
-                                    CollectionUtil.join(fiedSet, ","), StrUtil.toUnderlineCase(table.getDependTable().getSourceFieldName()), subParamList));
-                            removeDataMap.put(table.getTableName(), dataList);
-                        }
-                    } else {
-                        removeDataMap.put(table.getTableName(), null);
-                    }
-                }
-            }
-        }
-        return removeDataMap;
-    }
+//    private Map<String, List<Map>> getRemoveData(Map param, List<RemoveDataTable> tableList, Map<String, List<RemoveDataTable>> dependTableMap) {
+//        //TODO 将数据放入ThreadLocal中
+//        //获取要删除的数据
+//        Map<String, List<Map>> removeDataMap = Maps.newHashMap();
+//        //避免死循环
+//        int count = -1;
+//        while (removeDataMap.size() < tableList.size() && count != removeDataMap.size()) {
+//            count = removeDataMap.size();
+//            for (RemoveDataTable table : tableList) {
+//                if (removeDataMap.containsKey(table.getTableName())) continue;
+//                boolean flag = StringUtils.isNotBlank(table.getFieldName()) && StringUtils.isNotBlank(table.getQueryParamName());
+//                //不依赖其他表,根据参数进行查询数据
+//                if (flag) {
+//                    List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
+//                    //判断当前表是否被依赖
+//                    if (CollectionUtil.isEmpty(dependTableList)) {
+//                        List<Map> list = dataBaseOperation.selectData(table.getTableName(), "id", StrUtil.toUnderlineCase(table.getFieldName()), param.get(table.getQueryParamName()));
+//                        removeDataMap.put(table.getTableName(), list);
+//                    } else {
+//                        Set<String> fieldSet = getDependFields(dependTableList);
+//                        if (CollectionUtil.isEmpty(fieldSet)) {
+//                            String error = String.format("配置文件中缺少depend-field-name依赖字段属性");
+//                            throw new RuntimeException(error);
+//                        } else {
+//                            List<Map> list = dataBaseOperation.selectData(table.getTableName(),
+//                                    CollectionUtil.join(fieldSet, ","), StrUtil.toUnderlineCase(table.getFieldName()), param.get(table.getQueryParamName()));
+//                            removeDataMap.put(table.getTableName(), list);
+//                        }
+//                    }
+//                } else {
+//                    //根据配置通过依赖表中字段作为查询条件
+//                    if (!removeDataMap.containsKey(table.getDependTable().getTableName())) {
+//                        continue;
+//                    }
+//                    //判断当前表是否被依赖，生成要查询的字段
+//                    List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
+//                    Set<String> fiedSet = CollectionUtil.isNotEmpty(dependTableList) ? getDependFields(dependTableList) : Stream.of("id").collect(Collectors.toSet());
+//                    //获取当前表查询条件值
+//                    List<Map> list = removeDataMap.get(table.getDependTable().getTableName());
+//                    List<Object> paramValueList = list == null ? null : list.stream().map(map -> map.get(table.getDependTable().getDependFieldName())).collect(Collectors.toList());
+//                    if (CollectionUtil.isNotEmpty(paramValueList)) {
+//                        //查询条件超过MAX_COUNT分多次查询
+//                        int size = paramValueList.size();
+//                        List<Map> dataList = Lists.newArrayList();
+//                        for (int i = 0; i < size; i += MAX_COUNT) {
+//                            List<Object> subParamList = paramValueList.subList(i, i + MAX_COUNT > size ? size : i + MAX_COUNT);
+//                            dataList.addAll(dataBaseOperation.selectData(table.getTableName(),
+//                                    CollectionUtil.join(fiedSet, ","), StrUtil.toUnderlineCase(table.getDependTable().getSourceFieldName()), subParamList));
+//                            removeDataMap.put(table.getTableName(), dataList);
+//                        }
+//                    } else {
+//                        removeDataMap.put(table.getTableName(), null);
+//                    }
+//                }
+//            }
+//        }
+//        return removeDataMap;
+//    }
 
     private RemoveDataTables getRemoveDataTables(String fileName) {
         String cacheName = deleteTableDataProperties.getCache();
@@ -136,11 +137,11 @@ public class GenerateDeleteParam {
     }
 
 
-    private Set<String> getDependFields(List<RemoveDataTable> dependTableList) {
-        Set<String> fieldSet = dependTableList.stream().map(removeTable -> {
-            return removeTable.getDependTable().getDependFieldName();
-        }).collect(Collectors.toSet());
-        fieldSet.add("id");
-        return fieldSet;
-    }
+//    private Set<String> getDependFields(List<RemoveDataTable> dependTableList) {
+//        Set<String> fieldSet = dependTableList.stream().map(removeTable -> {
+//            return removeTable.getDependTable().getDependFieldName();
+//        }).collect(Collectors.toSet());
+//        fieldSet.add("id");
+//        return fieldSet;
+//    }
 }

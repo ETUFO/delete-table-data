@@ -17,7 +17,7 @@
         </query-params>
     </table>
     <!--
-        根据其它表的数据做为条件进行查询，多个条件且的关系；
+        根据其它表的数据做为条件进行查询，多个条件且的关
     -->
     <table table-name="exam_round_paper_rel">
         <query-depend-tables>
@@ -27,8 +27,9 @@
 
     <!--
        自定义查询数据逻辑，实现扩展接口，配置实现类bean实例名称
+       通过设置before-table、after-table属性定义查询顺序
      -->
-    <table table-name="exam_round_paper_rel">
+    <table table-name="exam_round_paper_rel" before-table= "" after-table="">
         <query-extension-class  bean-name=""/>
     </table>
 

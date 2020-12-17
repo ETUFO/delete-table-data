@@ -25,6 +25,7 @@ public class RemoveExamDataXmlParse {
     public static RemoveDataTables getRemoveDataTables(String fileName){
         Object unmarshal = null;
         try {
+            fileName = fileName + ".xml";
             ClassPathResource classPathResource = new ClassPathResource(fileName);
             File file = classPathResource.getFile();
             if (!file.exists()) {

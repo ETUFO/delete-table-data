@@ -3,6 +3,7 @@ package com.xiaojie.core.parse.model.delete;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.List;
 
 /**
  * 删除的表
@@ -14,15 +15,30 @@ public class RemoveDataTable {
 
     @XmlAttribute(name = "table-name")
     private String tableName;
+    @XmlAttribute(name = "before-table")
+    private String beforeTable;
+    @XmlAttribute(name = "after-name")
+    private String afterTable;
+    @XmlAttribute(name = "delete-max-limit")
+    private String deleteMaxLimit;
 
-    @XmlAttribute(name = "field-name")
-    private String fieldName;
+    @XmlElement(name = "query-depend-tables")
+    private DependTables queryDependTables;
 
-    @XmlAttribute(name = "query-param-name")
-    private String queryParamName;
+    @XmlElement(name = "delete-depend-tables")
+    private DependTables deleteDependTables;
 
-    @XmlElement(name = "depend-table")
-    private DependTable dependTable;
+    @XmlElement(name = "query-params")
+    private QueryParams queryParams;
+
+    @XmlElement(name = "delete-extension-class")
+    private DeleteExtensionClass deleteExtensionClass;
+
+    @XmlElement(name = "query-extension-class")
+    private QueryExtensionClass queryExtensionClass;
+
+    @XmlElement(name = "delete-params")
+    private DeleteParams deleteParams;
 
 
     @XmlTransient
@@ -30,35 +46,77 @@ public class RemoveDataTable {
         return tableName;
     }
 
+
+
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
     @XmlTransient
-    public String getFieldName() {
-        return fieldName;
+    public DependTables getQueryDependTables() {
+        return queryDependTables;
     }
 
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    @XmlTransient
-    public String getQueryParamName() {
-        return queryParamName;
-    }
-
-    public void setQueryParamName(String queryParamName) {
-        this.queryParamName = queryParamName;
+    public void setQueryDependTables(DependTables queryDependTables) {
+        this.queryDependTables = queryDependTables;
     }
 
     @XmlTransient
-    public DependTable getDependTable() {
-        return dependTable;
+    public DependTables getDeleteDependTables() {
+        return deleteDependTables;
     }
 
-    public void setDependTable(DependTable dependTable) {
-        this.dependTable = dependTable;
+    public void setDeleteDependTables(DependTables deleteDependTables) {
+        this.deleteDependTables = deleteDependTables;
     }
 
+    @XmlTransient
+    public String getBeforeTable() {
+        return beforeTable;
+    }
+
+    public void setBeforeTable(String beforeTable) {
+        this.beforeTable = beforeTable;
+    }
+    @XmlTransient
+    public String getAfterTable() {
+        return afterTable;
+    }
+
+    public void setAfterTable(String afterTable) {
+        this.afterTable = afterTable;
+    }
+    @XmlTransient
+    public String getDeleteMaxLimit() {
+        return deleteMaxLimit;
+    }
+
+    public void setDeleteMaxLimit(String deleteMaxLimit) {
+        this.deleteMaxLimit = deleteMaxLimit;
+    }
+    @XmlTransient
+    public QueryParams getQueryParams() {
+        return queryParams;
+    }
+
+    public void setQueryParams(QueryParams queryParams) {
+        this.queryParams = queryParams;
+    }
+    @XmlTransient
+    public DeleteExtensionClass getDeleteExtensionClass() {
+        return deleteExtensionClass;
+    }
+
+    public void setDeleteExtensionClass(DeleteExtensionClass deleteExtensionClass) {
+        this.deleteExtensionClass = deleteExtensionClass;
+    }
+
+    @XmlTransient
+    public DeleteParams getDeleteParams() {
+        return deleteParams;
+    }
+
+    public void setDeleteParams(DeleteParams deleteParams) {
+        this.deleteParams = deleteParams;
+    }
 }
