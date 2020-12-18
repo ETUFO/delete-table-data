@@ -8,6 +8,7 @@ import com.xiaojie.core.parse.model.QueryParam;
 import com.xiaojie.core.parse.model.RemoveDataTable;
 import com.xiaojie.core.service.QueryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Set;
  * @classname QueryParamStrategy
  * @date 2020/12/18 14:47
  **/
+@Component
 public class QueryParamStrategy extends AbstractQueryStrategy {
 
     @Autowired

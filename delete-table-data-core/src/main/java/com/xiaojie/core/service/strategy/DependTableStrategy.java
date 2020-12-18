@@ -11,6 +11,7 @@ import com.xiaojie.core.parse.model.DependTable;
 import com.xiaojie.core.parse.model.RemoveDataTable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
  * @classname DependTableStrategy
  * @date 2020/12/18 14:51
  **/
+@Component
 public class DependTableStrategy extends AbstractQueryStrategy {
 
     @Autowired

@@ -1,21 +1,21 @@
 package com.xiaojie.core.service;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.convert.Convert;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.xiaojie.autoconfigure.DeleteTableDataProperties;
 import com.xiaojie.core.cache.Cache;
 import com.xiaojie.core.context.DeleteLogContext;
 import com.xiaojie.core.context.TableDataContext;
 import com.xiaojie.core.dao.DataBaseOperation;
-import com.xiaojie.core.dao.Param;
+import com.xiaojie.core.exception.BeanNotFound;
+import com.xiaojie.core.extension.CustomerDelete;
 import com.xiaojie.core.extension.CustomerQuery;
 import com.xiaojie.core.parse.RemoveExamDataXmlParse;
 import com.xiaojie.core.parse.model.*;
+import com.xiaojie.core.service.strategy.DeleteParamStrategy;
 import com.xiaojie.core.service.strategy.DependTableStrategy;
 import com.xiaojie.core.service.strategy.QueryParamStrategy;
 import org.apache.commons.lang3.StringUtils;
@@ -65,11 +65,29 @@ public class GenerateDeleteParam {
             //获取要删除的数据
             Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
             //删除数据
+            deleteData(param, tableList, removeDataMap);
         } catch (Exception e) {
             throw e;
         } finally {
             TableDataContext.instance().remove();
             DeleteLogContext.instance().remove();
+        }
+    }
+
+    private void deleteData(Map<String, Object> param, List<RemoveDataTable> tableList, Map<String, List<Map>> removeDataMap) {
+        for (RemoveDataTable table : tableList) {
+            //自定义删除
+            String beanName = Optional.ofNullable(table.getDeleteExtensionClass())
+                    .map(extension -> extension.getBeanName()).orElseThrow(null);
+            if (StringUtils.isNotBlank(beanName)) {
+                CustomerDelete customerDelete = SpringUtil.getBean(beanName);
+                if (customerDelete == null)
+                    throw new BeanNotFound(beanName + "实例不存在");
+                customerDelete.delete(table.getTableName(), param);
+            }
+            boolean flag = Optional.ofNullable(table.getDeleteParams()).map(deleteParams -> deleteParams.getDeleteParams() != null).orElse(false);
+            DeleteStrategy deleteStrategy = flag ? SpringUtil.getBean(DeleteParamStrategy.class) : null;
+            deleteStrategy.delete(param, table, removeDataMap);
         }
     }
 
@@ -91,6 +109,8 @@ public class GenerateDeleteParam {
                 String beanName = Optional.ofNullable(table.getQueryExtensionClass()).map(extension -> extension.getBeanName()).orElse(null);
                 if (StringUtils.isNotEmpty(beanName)) {
                     CustomerQuery customerQuery = SpringUtil.getBean(beanName);
+                    if (customerQuery == null)
+                        throw new BeanNotFound(beanName + "实例不存在");
                     List list = customerQuery.get(table.getTableName(), param);
                     removeDataMap.put(table.getTableName(), list);
                 }
@@ -102,7 +122,7 @@ public class GenerateDeleteParam {
                     removeDataMap.put(table.getTableName(), tableDataList);
                     DeleteLogContext.instance().getTableMap().remove(table.getTableName());
                 } else {
-                    DeleteLogContext.instance().getTableMap().put(table.getTableName(),table);
+                    DeleteLogContext.instance().getTableMap().put(table.getTableName(), table);
                 }
             }
         }
