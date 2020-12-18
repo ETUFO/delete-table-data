@@ -118,4 +118,13 @@ public class RemoveDataTable {
     public void setDeleteParams(DeleteParams deleteParams) {
         this.deleteParams = deleteParams;
     }
+
+    @XmlTransient
+    public QueryExtensionClass getQueryExtensionClass() {
+        return queryExtensionClass;
+    }
+
+    public void setQueryExtensionClass(QueryExtensionClass queryExtensionClass) {
+        this.queryExtensionClass = queryExtensionClass;
+    }
 }
