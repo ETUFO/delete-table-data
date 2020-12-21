@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiaojie.mybatisplus.dao.QueryMapper">
+
+    <select id="selectByMaps" resultType="Map">
+        select
+        ${fields}
+        FROM ${tableName}
+        <where>
+            <foreach collection="condition.keys" item="k1" separator="and">
+                <choose>
+                    <when test="condition[k1] != null">
+                        <choose>
+                            <when test="@com.xiaojie.mybatisplus.toolkits.ClassTypeUtil@isCollection(condition[k1])">
+                                ${k1} in
+                                <foreach collection="condition[k1]" item="v" separator="," open="(" close=")">
+                                    #{v}
+                                </foreach>
+                            </when>
+                            <otherwise>
+                                ${k1} = #{condition[${k1}]}
+                            </otherwise>
+                        </choose>
+                    </when>
+                    <otherwise>
+                        (${k1} is null or ${k1} = '')
+                    </otherwise>
+                </choose>
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

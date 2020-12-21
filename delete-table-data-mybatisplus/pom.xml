@@ -11,5 +11,16 @@
 
     <artifactId>delete-table-data-mybatisplus</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.xiaojie</groupId>
+            <artifactId>delete-table-data-core</artifactId>
+            <version>${delete-table-data.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+    </dependencies>
 </project>
