@@ -33,7 +33,7 @@ import java.util.*;
  * @date 2020/12/16 14:10
  **/
 @Component
-public class GenerateDeleteParam {
+public class DeleteService {
 
     @Autowired
     private DeleteTableDataProperties deleteTableDataProperties;
