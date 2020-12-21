@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020/12/16 13:50
  **/
 @Configuration
-@ComponentScan({"com.xiaojie","cn.hutool"})
+@ComponentScan({"com.xiaojie"})
 public class AutoConfiguration {
 }

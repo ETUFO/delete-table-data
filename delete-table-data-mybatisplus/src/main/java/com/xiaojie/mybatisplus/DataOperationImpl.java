@@ -1,11 +1,11 @@
 package com.xiaojie.mybatisplus;
 
-import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.xiaojie.core.dao.DataOperation;
 import com.xiaojie.core.dao.Param;
+import com.xiaojie.core.toolkits.CustSpringContextUtil;
 import com.xiaojie.mybatisplus.dao.QueryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,12 +51,12 @@ public class DataOperationImpl implements DataOperation {
     }
 
     public int delete(String tableName, String paramName, Object paramValue) {
-        BaseMapper baseMapper = SpringUtil.getBean(tableName + "Mapper");
+        BaseMapper baseMapper = CustSpringContextUtil.getBean(tableName + "Mapper");
         return baseMapper.deleteByMap(ImmutableMap.of(paramName,paramValue));
     }
 
     public int delete(String tableName, List<Param> params) {
-        BaseMapper baseMapper = SpringUtil.getBean(tableName + "Mapper");
+        BaseMapper baseMapper = CustSpringContextUtil.getBean(tableName + "Mapper");
         Map paramMap = Maps.newHashMap();
         for (Param param : params) {
             paramMap.put(param.getName(),param.getValue());

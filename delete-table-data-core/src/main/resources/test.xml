@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tables>
+
+    <!--
+         删除数据默认按照先获取删除数据id再进行删除的逻辑；
+         获取数据分为两种方式
+                1、根据传入的参数获取数据，多个条件是且的关系；
+                2、根据其它表的数作为条件查询数据；
+         按照默认id删除，对于数据量大的表参数过多可以设置delete-max-limit分多次删除
+         下面这个例子是第一种情况
+    -->
+    <table table-name="exam_info" delete-max-limit="100000">
+        <query-params>
+            <query-param param-name="aaa" filed-name="aaa"/>
+            <query-param param-name="bbb" filed-name="bbb"/>
+            <query-param param-name="ccc" filed-name="ccc"/>
+        </query-params>
+    </table>
+    <!--
+        根据其它表的数据做为条件进行查询，多个条件且的关
+    -->
+    <table table-name="exam_round_paper_rel">
+        <query-depend-tables>
+            <depend-table table-name="exam_round" source-field-name="roundId" depend-field-name="id"/>
+        </query-depend-tables>
+    </table>
+
+    <!--
+       自定义查询数据逻辑，实现扩展接口，配置实现类bean实例名称
+     -->
+    <table table-name="exam_round_paper_rel">
+        <query-extension-class  bean-name=""/>
+    </table>
+
+    <!--
+       删除可以根据依赖表的数据作为参数进行删除，多个条件且的关系
+    -->
+    <table table-name="exam_site">
+        <delete-depend-tables>
+            <depend-table table-name="exam_round" source-field-name="roundId" depend-field-name="id"/>
+        </delete-depend-tables>
+    </table>
+
+    <!--
+       删除可以按照传入参数进行删除，多个条件且的关系
+    -->
+    <table table-name="exam_room">
+        <delete-params>
+            <delete-param param-name="" field-name=""/>
+        </delete-params>
+    </table>
+
+    <!--
+      自定义删除数据逻辑，实现扩展接口，配置实现类bean实例名称
+    -->
+    <table table-name="exam_round_paper_rel">
+        <delete-extension-class  bean-name=""/>
+    </table>
+
+</tables>
+
+
