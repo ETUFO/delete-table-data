@@ -1,7 +1,7 @@
 package com.xiaojie.core.service.strategy;
 
 import com.google.common.collect.Lists;
-import com.xiaojie.core.dao.DataBaseOperation;
+import com.xiaojie.core.dao.DataOperation;
 import com.xiaojie.core.dao.Param;
 import com.xiaojie.core.exception.DeleteParamException;
 import com.xiaojie.core.parse.model.DeleteParam;
@@ -19,22 +19,22 @@ import java.util.Map;
  * @date 2020/12/18 16:46
  **/
 @Component
-public class DeleteParamStrategy extends AbstractDeleteStrategy {
+public class DeleteByParamStrategy extends AbstractDeleteStrategy {
     @Autowired
-    private DataBaseOperation dataBaseOperation;
+    private DataOperation dataOperation;
 
     @Override
-    public int delete(Map param, RemoveDataTable table,Map<String,List<Map>> deleteDataMap) {
+    public int delete(Map paramMap, RemoveDataTable table,Map<String,List<Map>> deleteDataMap) {
         List<Param> paramList = Lists.newArrayList();
         for (DeleteParam deleteParam : table.getDeleteParams().getDeleteParams()) {
-            Param param1 = new Param();
-            param1.setName(deleteParam.getFieldName());
-            Object value = param.get(deleteParam.getParamName());
+            Param param = new Param();
+            param.setName(deleteParam.getFieldName());
+            Object value = paramMap.get(deleteParam.getParamName());
             if(value == null){
                 throw new DeleteParamException(table.getTableName()+"表,参数"+deleteParam.getParamName()+"为空");
             }
-            param1.setValue(value);
+            param.setValue(value);
         }
-        return dataBaseOperation.delete(table.getTableName(),paramList);
+        return dataOperation.delete(table.getTableName(),paramList);
     }
 }

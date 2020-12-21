@@ -10,7 +10,7 @@ import java.util.Map;
  * @author: wangye
  * @date: 2020/12/17 9:28
  **/
-public interface DataBaseOperation {
+public interface DataOperation {
 
     List<Map> selectData(String tableName, String fields, String paramName, Object paramValue);
 

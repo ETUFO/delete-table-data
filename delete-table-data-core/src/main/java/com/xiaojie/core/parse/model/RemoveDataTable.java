@@ -14,10 +14,6 @@ public class RemoveDataTable {
 
     @XmlAttribute(name = "table-name")
     private String tableName;
-    @XmlAttribute(name = "before-table")
-    private String beforeTable;
-    @XmlAttribute(name = "after-name")
-    private String afterTable;
     @XmlAttribute(name = "delete-max-limit")
     private String deleteMaxLimit;
 
@@ -69,22 +65,6 @@ public class RemoveDataTable {
         this.deleteDependTables = deleteDependTables;
     }
 
-    @XmlTransient
-    public String getBeforeTable() {
-        return beforeTable;
-    }
-
-    public void setBeforeTable(String beforeTable) {
-        this.beforeTable = beforeTable;
-    }
-    @XmlTransient
-    public String getAfterTable() {
-        return afterTable;
-    }
-
-    public void setAfterTable(String afterTable) {
-        this.afterTable = afterTable;
-    }
     @XmlTransient
     public String getDeleteMaxLimit() {
         return deleteMaxLimit;

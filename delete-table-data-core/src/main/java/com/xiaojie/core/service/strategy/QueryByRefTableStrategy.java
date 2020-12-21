@@ -3,9 +3,8 @@ package com.xiaojie.core.service.strategy;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.xiaojie.core.context.TableDataContext;
-import com.xiaojie.core.dao.DataBaseOperation;
+import com.xiaojie.core.dao.DataOperation;
 import com.xiaojie.core.dao.Param;
 import com.xiaojie.core.parse.model.DependTable;
 import com.xiaojie.core.parse.model.RemoveDataTable;
@@ -26,10 +25,10 @@ import java.util.stream.Stream;
  * @date 2020/12/18 14:51
  **/
 @Component
-public class DependTableStrategy extends AbstractQueryStrategy {
+public class QueryByRefTableStrategy extends AbstractQueryStrategy {
 
     @Autowired
-    private DataBaseOperation dataBaseOperation;
+    private DataOperation dataOperation;
 
     @Override
     public List<Map> query(Map param, Map<String, List<RemoveDataTable>> dependTableMap, RemoveDataTable table) {
@@ -54,7 +53,7 @@ public class DependTableStrategy extends AbstractQueryStrategy {
             int maxCount = StringUtils.isNotBlank(table.getDeleteMaxLimit()) ? Convert.toInt(table.getDeleteMaxLimit()) : dataList.size();
             for (int i = 0; i < size; i += maxCount) {
                 List<Param> subParamList = paramList.subList(i, i + maxCount > size ? size : i + maxCount);
-                dataList.addAll(dataBaseOperation.selectData(table.getTableName(),
+                dataList.addAll(dataOperation.selectData(table.getTableName(),
                         CollectionUtil.join(fieldSet, ","), subParamList));
             }
             return dataList;

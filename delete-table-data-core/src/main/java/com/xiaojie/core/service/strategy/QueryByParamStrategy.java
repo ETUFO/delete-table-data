@@ -1,12 +1,10 @@
 package com.xiaojie.core.service.strategy;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.google.common.collect.Maps;
-import com.xiaojie.core.dao.DataBaseOperation;
+import com.xiaojie.core.dao.DataOperation;
 import com.xiaojie.core.dao.Param;
 import com.xiaojie.core.parse.model.QueryParam;
 import com.xiaojie.core.parse.model.RemoveDataTable;
-import com.xiaojie.core.service.QueryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +20,10 @@ import java.util.Set;
  * @date 2020/12/18 14:47
  **/
 @Component
-public class QueryParamStrategy extends AbstractQueryStrategy {
+public class QueryByParamStrategy extends AbstractQueryStrategy {
 
     @Autowired
-    private DataBaseOperation dataBaseOperation;
+    private DataOperation dataOperation;
 
     @Override
     public List<Map> query(Map param, Map<String, List<RemoveDataTable>> dependTableMap, RemoveDataTable table) {
@@ -36,14 +34,14 @@ public class QueryParamStrategy extends AbstractQueryStrategy {
         List<Param> queryParamList = getParams(param, paramList);
         //判断当前表是否被依赖
         if (CollectionUtil.isEmpty(dependTableList)) {
-            dataList = dataBaseOperation.selectData(table.getTableName(), "id", queryParamList);
+            dataList = dataOperation.selectData(table.getTableName(), "id", queryParamList);
         } else {
             Set<String> fieldSet = getDependFields(table.getTableName(), dependTableList);
             if (CollectionUtil.isEmpty(fieldSet)) {
                 String error = String.format("配置文件中缺少depend-field-name依赖字段属性");
                 throw new RuntimeException(error);
             } else {
-                dataList = dataBaseOperation.selectData(table.getTableName(),
+                dataList = dataOperation.selectData(table.getTableName(),
                         CollectionUtil.join(fieldSet, ","), queryParamList);
             }
         }

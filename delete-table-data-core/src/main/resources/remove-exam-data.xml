@@ -27,9 +27,8 @@
 
     <!--
        自定义查询数据逻辑，实现扩展接口，配置实现类bean实例名称
-       通过设置before-table、after-table属性定义查询顺序
      -->
-    <table table-name="exam_round_paper_rel" before-table= "" after-table="">
+    <table table-name="exam_round_paper_rel">
         <query-extension-class  bean-name=""/>
     </table>
 

@@ -9,15 +9,15 @@ import com.xiaojie.autoconfigure.DeleteTableDataProperties;
 import com.xiaojie.core.cache.Cache;
 import com.xiaojie.core.context.DeleteLogContext;
 import com.xiaojie.core.context.TableDataContext;
-import com.xiaojie.core.dao.DataBaseOperation;
+import com.xiaojie.core.dao.DataOperation;
 import com.xiaojie.core.exception.BeanNotFound;
 import com.xiaojie.core.extension.CustomerDelete;
 import com.xiaojie.core.extension.CustomerQuery;
 import com.xiaojie.core.parse.RemoveExamDataXmlParse;
 import com.xiaojie.core.parse.model.*;
-import com.xiaojie.core.service.strategy.DeleteParamStrategy;
-import com.xiaojie.core.service.strategy.DependTableStrategy;
-import com.xiaojie.core.service.strategy.QueryParamStrategy;
+import com.xiaojie.core.service.strategy.DeleteByParamStrategy;
+import com.xiaojie.core.service.strategy.QueryByRefTableStrategy;
+import com.xiaojie.core.service.strategy.QueryByParamStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,8 +39,7 @@ public class GenerateDeleteParam {
     private DeleteTableDataProperties deleteTableDataProperties;
     @Autowired
     private Cache defualtCache;
-    @Autowired
-    private DataBaseOperation dataBaseOperation;
+
 
     public void removeData(String fileName, Map<String, Object> param) {
         try {
@@ -61,7 +60,6 @@ public class GenerateDeleteParam {
                     list.add(removeDataTable);
                 }
             }
-            //TODO 根据before-table、after-table属性进行排序
             //获取要删除的数据
             Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
             //删除数据
@@ -76,7 +74,7 @@ public class GenerateDeleteParam {
 
     private void deleteData(Map<String, Object> param, List<RemoveDataTable> tableList, Map<String, List<Map>> removeDataMap) {
         for (RemoveDataTable table : tableList) {
-            //自定义删除
+            //调用自定义删除逻辑
             String beanName = Optional.ofNullable(table.getDeleteExtensionClass())
                     .map(extension -> extension.getBeanName()).orElseThrow(null);
             if (StringUtils.isNotBlank(beanName)) {
@@ -85,8 +83,9 @@ public class GenerateDeleteParam {
                     throw new BeanNotFound(beanName + "实例不存在");
                 customerDelete.delete(table.getTableName(), param);
             }
+            //根据配置调用不同的删除逻辑
             boolean flag = Optional.ofNullable(table.getDeleteParams()).map(deleteParams -> deleteParams.getDeleteParams() != null).orElse(false);
-            DeleteStrategy deleteStrategy = flag ? SpringUtil.getBean(DeleteParamStrategy.class) : null;
+            DeleteStrategy deleteStrategy = flag ? SpringUtil.getBean(DeleteByParamStrategy.class) : null;
             deleteStrategy.delete(param, table, removeDataMap);
         }
     }
@@ -116,7 +115,7 @@ public class GenerateDeleteParam {
                 }
                 //根据不同策略进行查询
                 boolean flag = Optional.of(table.getQueryParams()).map(queryParams -> queryParams.getParamList() != null).orElse(false);
-                QueryStrategy queryStrategy = flag ? SpringUtil.getBean(QueryParamStrategy.class) : SpringUtil.getBean(DependTableStrategy.class);
+                QueryStrategy queryStrategy = flag ? SpringUtil.getBean(QueryByParamStrategy.class) : SpringUtil.getBean(QueryByRefTableStrategy.class);
                 List<Map> tableDataList = queryStrategy.query(param, dependTableMap, table);
                 if (CollectionUtil.isNotEmpty(tableDataList)) {
                     removeDataMap.put(table.getTableName(), tableDataList);
