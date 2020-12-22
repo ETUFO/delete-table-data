@@ -1,5 +1,7 @@
 package com.xiaojie.core.service.strategy;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.xiaojie.core.dao.Param;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 查询抽象类
@@ -34,28 +37,32 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
 
     protected List<Param> getParams(Map<String, List<Map>> removeDataMap, RemoveDataTable table) {
         List<Param> paramList = Lists.newArrayList();
-        List<DependTable> dependTableList = Optional.ofNullable(table.getDeleteDependTables()).map(dependTables -> dependTables.getDependTableList()).orElse(null);
+        List<DependTable> dependTableList = Optional.ofNullable(table.getQueryDependTables()).map(dependTables -> dependTables.getDependTableList()).orElse(null);
         if (dependTableList == null){
             return null;
         }
         for (DependTable dependTable : dependTableList) {
             Param param = new Param();
-            param.setName(dependTable.getDependFieldName());
-            param.setValue(removeDataMap.get(dependTable.getTableName()));
+            param.setName(StrUtil.toUnderlineCase(dependTable.getSourceFieldName()));
+            List<Map> dataList = removeDataMap.get(dependTable.getTableName());
+            List<Object> paramValuse = Optional.ofNullable(dataList).map(list -> {
+                return list.stream().map(map -> map.get(dependTable.getDependFieldName())).collect(Collectors.toList());
+            }).orElse(null);
+            param.setValue(paramValuse);
             paramList.add(param);
         }
         return paramList;
     }
 
 
-    protected Set<String> getQueryFields(RemoveDataTable table, List<RemoveDataTable> dataTableList) {
+    protected String getQueryFields(RemoveDataTable table, List<RemoveDataTable> dataTableList) {
         Set<String> fieldSet = Sets.newHashSet();
         if(dataTableList ==null){
             fieldSet.add("id");
         }else{
             fieldSet = getDependFields(table.getTableName(), dataTableList);
         }
-        return fieldSet;
+        return CollectionUtil.join(fieldSet,",");
     }
 
     protected Set<String> getDependFields(String tableName, List<RemoveDataTable> dependTableList) {
@@ -65,7 +72,7 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
             if (queryDependTables != null) {
                 for (DependTable queryDependTable : queryDependTables) {
                     if (tableName.equals(queryDependTable.getTableName())) {
-                        fieldSet.add(queryDependTable.getDependFieldName());
+                        fieldSet.add(StrUtil.toUnderlineCase(queryDependTable.getDependFieldName())+" "+queryDependTable.getDependFieldName());
                     }
                 }
             }
@@ -73,7 +80,7 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
             if (deleteDependTables != null) {
                 for (DependTable deleteDependTable : deleteDependTables) {
                     if (tableName.equals(deleteDependTable.getTableName())) {
-                        fieldSet.add(deleteDependTable.getDependFieldName());
+                        fieldSet.add(StrUtil.toUnderlineCase(deleteDependTable.getDependFieldName())+" "+deleteDependTable.getDependFieldName());
                     }
                 }
             }

@@ -27,8 +27,8 @@ public class DefaultQueryStrategy extends AbstractQueryStrategy {
     @Override
     public List<Map> query(Map param, Map<String, List<RemoveDataTable>> dependTableMap, RemoveDataTable table) {
         List<RemoveDataTable> dataTableList = dependTableMap.get(table.getTableName());
-        Set<String> fieldSet = getQueryFields(table, dataTableList);
-        return dataOperation.selectAll(table.getTableName(), CollectionUtil.join(fieldSet,","));
+        String fields = getQueryFields(table, dataTableList);
+        return dataOperation.selectAll(table.getTableName(), fields);
     }
 
 

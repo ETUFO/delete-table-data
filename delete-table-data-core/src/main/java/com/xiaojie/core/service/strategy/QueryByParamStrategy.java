@@ -31,8 +31,7 @@ public class QueryByParamStrategy extends AbstractQueryStrategy {
         //根据query-param标签生成查询参数
         List<Param> queryParamList = getParams(param, paramList);
         //判断当前表是否被依赖
-        Set<String> fieldSet = getQueryFields(table, dependTableList);
-        return dataOperation.selectData(table.getTableName(),
-                CollectionUtil.join(fieldSet, ","), queryParamList);
+        String fields = getQueryFields(table, dependTableList);
+        return dataOperation.selectData(table.getTableName(),fields, queryParamList);
     }
 }

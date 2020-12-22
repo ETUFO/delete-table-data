@@ -34,7 +34,6 @@ public class QueryByRefTableStrategy extends AbstractQueryStrategy {
     public List<Map> query(Map param, Map<String, List<RemoveDataTable>> dependTableMap, RemoveDataTable table) {
         //通过依赖表中字段作为查询条件
         List<DependTable> dependTableList1 = getDependTableList(table);
-        List<Map> dataList = Lists.newArrayList();
         Map<String,List<Map>>  removeDataMap = TableDataContext.instance().getData();
         for (DependTable dependTable : dependTableList1) {
             if (!removeDataMap.containsKey(dependTable.getTableName())) {
@@ -43,19 +42,11 @@ public class QueryByRefTableStrategy extends AbstractQueryStrategy {
         }
         //判断当前表是否被依赖，生成要查询的字段
         List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
-        Set<String> fieldSet = getQueryFields(table, dependTableList);
+        String fields = getQueryFields(table, dependTableList);
         //从依赖表中获取当前表查询条件值
         List<Param> paramList = getParams(removeDataMap, table);
         if (CollectionUtil.isNotEmpty(paramList)) {
-            //查询条件超过MAX_COUNT分多次查询
-            int size = paramList.size();
-            int maxCount = StringUtils.isNotBlank(table.getDeleteMaxLimit()) ? Convert.toInt(table.getDeleteMaxLimit()) : dataList.size();
-            for (int i = 0; i < size; i += maxCount) {
-                List<Param> subParamList = paramList.subList(i, i + maxCount > size ? size : i + maxCount);
-                dataList.addAll(dataOperation.selectData(table.getTableName(),
-                        CollectionUtil.join(fieldSet, ","), subParamList));
-            }
-            return dataList;
+            return dataOperation.selectData(table.getTableName(),  fields,paramList);
         } else {
             return null;
         }

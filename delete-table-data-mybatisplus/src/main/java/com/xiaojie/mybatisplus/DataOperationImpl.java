@@ -1,9 +1,9 @@
 package com.xiaojie.mybatisplus;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import com.xiaojie.core.dao.DataOperation;
 import com.xiaojie.core.dao.Param;
 import com.xiaojie.core.toolkits.CustSpringContextUtil;
@@ -47,14 +47,27 @@ public class DataOperationImpl implements DataOperation {
 
     @Override
     public int delete(String tableName, String paramName, Object paramValue) {
-        BaseMapper baseMapper = CustSpringContextUtil.getBean(tableName + "Mapper");
-        return baseMapper.deleteByMap(ImmutableMap.of(paramName, paramValue));
+        BaseMapper baseMapper = CustSpringContextUtil.getBean(StrUtil.toCamelCase(tableName) + "Mapper");
+        UpdateWrapper<Object> updateWrapper = new UpdateWrapper<>();
+        if(paramValue instanceof Collection){
+            updateWrapper.in(paramName,paramValue);
+        }else{
+            updateWrapper.eq(paramName,paramValue);
+        }
+        return baseMapper.delete(updateWrapper);
     }
 
     @Override
     public int delete(String tableName, List<Param> params) {
-        BaseMapper baseMapper = CustSpringContextUtil.getBean(tableName + "Mapper");
-        Map<String, Object> paramMap = params.stream().collect(Collectors.toMap(Param::getName, Param::getValue));
-        return baseMapper.deleteByMap(paramMap);
+        BaseMapper baseMapper = CustSpringContextUtil.getBean(StrUtil.toCamelCase(tableName) + "Mapper");
+        UpdateWrapper<Object> updateWrapper = new UpdateWrapper<>();
+        for (Param param : params) {
+            if(param.getValue() instanceof Collection){
+                updateWrapper.in(param.getName(),param.getValue());
+            }else{
+                updateWrapper.eq(param.getName(),param.getValue());
+            }
+        }
+        return baseMapper.delete(updateWrapper);
     }
 }

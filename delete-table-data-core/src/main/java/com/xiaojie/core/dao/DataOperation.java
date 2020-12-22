@@ -16,7 +16,7 @@ public interface DataOperation {
 
     List<Map> selectData(String tableName, String fields, List<Param> params);
 
-    List<Map> selectAll(String tableName, String join);
+    List<Map> selectAll(String tableName, String fields);
 
     int delete(String tableName, String paramName, Object paramValue);
 
