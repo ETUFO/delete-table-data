@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 根据参数删除
+ * 根据参数删除1
  * @author wangye
  * @classname DeleteParamStrategy
  * @date 2020/12/18 16:46
