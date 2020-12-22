@@ -38,7 +38,7 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
     protected List<Param> getParams(Map<String, List<Map>> removeDataMap, RemoveDataTable table) {
         List<Param> paramList = Lists.newArrayList();
         List<DependTable> dependTableList = Optional.ofNullable(table.getQueryDependTables()).map(dependTables -> dependTables.getDependTableList()).orElse(null);
-        if (dependTableList == null){
+        if (dependTableList == null) {
             return null;
         }
         for (DependTable dependTable : dependTableList) {
@@ -57,12 +57,12 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
 
     protected String getQueryFields(RemoveDataTable table, List<RemoveDataTable> dataTableList) {
         Set<String> fieldSet = Sets.newHashSet();
-        if(dataTableList ==null){
+        if (dataTableList == null) {
             fieldSet.add("id");
-        }else{
+        } else {
             fieldSet = getDependFields(table.getTableName(), dataTableList);
         }
-        return CollectionUtil.join(fieldSet,",");
+        return CollectionUtil.join(fieldSet, ",");
     }
 
     protected Set<String> getDependFields(String tableName, List<RemoveDataTable> dependTableList) {
@@ -72,7 +72,9 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
             if (queryDependTables != null) {
                 for (DependTable queryDependTable : queryDependTables) {
                     if (tableName.equals(queryDependTable.getTableName())) {
-                        fieldSet.add(StrUtil.toUnderlineCase(queryDependTable.getDependFieldName())+" "+queryDependTable.getDependFieldName());
+                        String dependFieldName = queryDependTable.getDependFieldName();
+                        String field = dependFieldName.contains("_") ? StrUtil.toUnderlineCase(dependFieldName) + " " + dependFieldName : dependFieldName;
+                        fieldSet.add(field);
                     }
                 }
             }
@@ -80,7 +82,9 @@ public abstract class AbstractQueryStrategy implements QueryStrategy {
             if (deleteDependTables != null) {
                 for (DependTable deleteDependTable : deleteDependTables) {
                     if (tableName.equals(deleteDependTable.getTableName())) {
-                        fieldSet.add(StrUtil.toUnderlineCase(deleteDependTable.getDependFieldName())+" "+deleteDependTable.getDependFieldName());
+                        String dependFieldName = deleteDependTable.getDependFieldName();
+                        String field = dependFieldName.contains("_") ? StrUtil.toUnderlineCase(dependFieldName) + " " + dependFieldName : dependFieldName;
+                        fieldSet.add(field);
                     }
                 }
             }
