@@ -100,6 +100,7 @@ public class DeleteService {
                 if (removeDataMap.containsKey(table.getTableName())) continue;
                 //调用不同的查询策略
                 QueryStrategy queryStrategy = QueryStrategyFactory.createQueryStrategy(table);
+                if (queryStrategy == null) continue;
                 List<Map> tableDataList = queryStrategy.query(param, dependTableMap, table);
                 if (CollectionUtil.isNotEmpty(tableDataList)) {
                     removeDataMap.put(table.getTableName(), tableDataList);
