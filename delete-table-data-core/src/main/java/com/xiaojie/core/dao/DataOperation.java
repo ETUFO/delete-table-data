@@ -16,8 +16,11 @@ public interface DataOperation {
 
     List<Map> selectData(String tableName, String fields, List<Param> params);
 
+    List<Map> selectAll(String tableName, String join);
+
     int delete(String tableName, String paramName, Object paramValue);
 
     int delete(String tableName, List<Param> params);
+
 }
 

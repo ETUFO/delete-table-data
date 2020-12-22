@@ -13,4 +13,5 @@ public interface QueryMapper {
             @Param("fields")String fields,@Param("condition") Map condition);
 
 
+    List<Map> selectAll(@Param("tableName")String tableName, @Param("fields")String fields);
 }

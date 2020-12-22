@@ -17,7 +17,7 @@ public class QueryParam implements Serializable {
     @XmlAttribute(name = "param-name")
     private String paramName;
     @XmlAttribute(name = "field-name")
-    private String filedName;
+    private String fieldName;
 
     @XmlTransient
     public String getParamName() {
@@ -29,11 +29,11 @@ public class QueryParam implements Serializable {
     }
 
     @XmlTransient
-    public String getFiledName() {
-        return filedName;
+    public String getFieldName() {
+        return fieldName;
     }
 
-    public void setFiledName(String filedName) {
-        this.filedName = filedName;
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 }

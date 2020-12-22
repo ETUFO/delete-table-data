@@ -29,5 +29,8 @@
             </foreach>
         </where>
     </select>
+    <select id="selectAll" resultType="java.util.Map">
+        select ${fields} from ${tableName}
+    </select>
 
 </mapper>

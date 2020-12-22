@@ -8,20 +8,21 @@ import com.xiaojie.autoconfigure.DeleteTableDataProperties;
 import com.xiaojie.core.cache.Cache;
 import com.xiaojie.core.context.DeleteLogContext;
 import com.xiaojie.core.context.TableDataContext;
-import com.xiaojie.core.exception.BeanNotFound;
-import com.xiaojie.core.extension.CustomerDelete;
-import com.xiaojie.core.extension.CustomerQuery;
+import com.xiaojie.core.factory.DeleteStrategyFactory;
+import com.xiaojie.core.factory.QueryStrategyFactory;
 import com.xiaojie.core.parse.RemoveExamDataXmlParse;
-import com.xiaojie.core.parse.model.*;
-import com.xiaojie.core.service.strategy.DeleteByParamStrategy;
-import com.xiaojie.core.service.strategy.QueryByRefTableStrategy;
-import com.xiaojie.core.service.strategy.QueryByParamStrategy;
+import com.xiaojie.core.parse.model.DependTable;
+import com.xiaojie.core.parse.model.DependTables;
+import com.xiaojie.core.parse.model.RemoveDataTable;
+import com.xiaojie.core.parse.model.RemoveDataTables;
 import com.xiaojie.core.toolkits.CustSpringContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -47,18 +48,7 @@ public class DeleteService {
             RemoveDataTables removeDataTables = getRemoveDataTables(fileName);
             List<RemoveDataTable> tableList = removeDataTables.getRemoveDataTableList();
             //整合数据表之间依赖关系
-            Map<String, List<RemoveDataTable>> dependTableMap = Maps.newHashMap();
-            for (RemoveDataTable removeDataTable : tableList) {
-                List<DependTable> dependTableList = getDependTableList(removeDataTable);
-                for (DependTable dependTable : dependTableList) {
-                    List<RemoveDataTable> list = dependTableMap.get(dependTable.getTableName());
-                    if (list == null) {
-                        list = Lists.newArrayList();
-                        dependTableMap.put(dependTable.getTableName(), list);
-                    }
-                    list.add(removeDataTable);
-                }
-            }
+            Map<String, List<RemoveDataTable>> dependTableMap = getRelationDpendTable(tableList);
             //获取要删除的数据
             Map<String, List<Map>> removeDataMap = getRemoveData(param, tableList, dependTableMap);
             //删除数据
@@ -71,20 +61,26 @@ public class DeleteService {
         }
     }
 
+    private Map<String, List<RemoveDataTable>> getRelationDpendTable(List<RemoveDataTable> tableList) {
+        Map<String, List<RemoveDataTable>> dependTableMap = Maps.newHashMap();
+        for (RemoveDataTable removeDataTable : tableList) {
+            List<DependTable> dependTableList = getDependTableList(removeDataTable);
+            for (DependTable dependTable : dependTableList) {
+                List<RemoveDataTable> list = dependTableMap.get(dependTable.getTableName());
+                if (list == null) {
+                    list = Lists.newArrayList();
+                    dependTableMap.put(dependTable.getTableName(), list);
+                }
+                list.add(removeDataTable);
+            }
+        }
+        return dependTableMap;
+    }
+
     private void deleteData(Map<String, Object> param, List<RemoveDataTable> tableList, Map<String, List<Map>> removeDataMap) {
         for (RemoveDataTable table : tableList) {
-            //调用自定义删除逻辑
-            String beanName = Optional.ofNullable(table.getDeleteExtensionClass())
-                    .map(extension -> extension.getBeanName()).orElseThrow(null);
-            if (StringUtils.isNotBlank(beanName)) {
-                CustomerDelete customerDelete = CustSpringContextUtil.getBean(beanName);
-                if (customerDelete == null)
-                    throw new BeanNotFound(beanName + "实例不存在");
-                customerDelete.delete(table.getTableName(), param);
-            }
             //根据配置调用不同的删除逻辑
-            boolean flag = Optional.ofNullable(table.getDeleteParams()).map(deleteParams -> deleteParams.getDeleteParams() != null).orElse(false);
-            DeleteStrategy deleteStrategy = flag ? CustSpringContextUtil.getBean(DeleteByParamStrategy.class) : null;
+            DeleteStrategy deleteStrategy = DeleteStrategyFactory.createDeleteStrategy(table);
             deleteStrategy.delete(param, table, removeDataMap);
         }
     }
@@ -99,22 +95,11 @@ public class DeleteService {
         int count = -1;
         while (removeDataMap.size() < tableList.size() && count != removeDataMap.size()) {
             count = removeDataMap.size();
-            outer:
             for (RemoveDataTable table : tableList) {
                 //数据已经获取，跳过当前循环
                 if (removeDataMap.containsKey(table.getTableName())) continue;
-                //使用扩展查询实现类
-                String beanName = Optional.ofNullable(table.getQueryExtensionClass()).map(extension -> extension.getBeanName()).orElse(null);
-                if (StringUtils.isNotEmpty(beanName)) {
-                    CustomerQuery customerQuery = CustSpringContextUtil.getBean(beanName);
-                    if (customerQuery == null)
-                        throw new BeanNotFound(beanName + "实例不存在");
-                    List list = customerQuery.get(table.getTableName(), param);
-                    removeDataMap.put(table.getTableName(), list);
-                }
-                //根据不同策略进行查询
-                boolean flag = Optional.of(table.getQueryParams()).map(queryParams -> queryParams.getParamList() != null).orElse(false);
-                QueryStrategy queryStrategy = flag ? CustSpringContextUtil.getBean(QueryByParamStrategy.class) : CustSpringContextUtil.getBean(QueryByRefTableStrategy.class);
+                //调用不同的查询策略
+                QueryStrategy queryStrategy = QueryStrategyFactory.createQueryStrategy(table);
                 List<Map> tableDataList = queryStrategy.query(param, dependTableMap, table);
                 if (CollectionUtil.isNotEmpty(tableDataList)) {
                     removeDataMap.put(table.getTableName(), tableDataList);

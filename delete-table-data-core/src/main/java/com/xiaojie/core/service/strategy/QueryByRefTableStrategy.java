@@ -43,8 +43,7 @@ public class QueryByRefTableStrategy extends AbstractQueryStrategy {
         }
         //判断当前表是否被依赖，生成要查询的字段
         List<RemoveDataTable> dependTableList = dependTableMap.get(table.getTableName());
-        Set<String> fieldSet = CollectionUtil.isNotEmpty(dependTableList) ? getDependFields(
-                table.getTableName(), dependTableList) : Stream.of("id").collect(Collectors.toSet());
+        Set<String> fieldSet = getQueryFields(table, dependTableList);
         //从依赖表中获取当前表查询条件值
         List<Param> paramList = getParams(removeDataMap, table);
         if (CollectionUtil.isNotEmpty(paramList)) {
