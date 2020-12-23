@@ -6,10 +6,10 @@
          获取数据分为两种方式
                 1、根据传入的参数获取数据，多个条件是且的关系；
                 2、根据其它表的数作为条件查询数据；
-         按照默认id删除，对于数据量大的表参数过多可以设置delete-max-limit分多次删除
+         按照默认id删除
          下面这个例子是第一种情况
     -->
-    <table table-name="exam_info" delete-max-limit="100000">
+    <table table-name="exam_info">
         <query-params>
             <query-param param-name="aaa" filed-name="aaa"/>
             <query-param param-name="bbb" filed-name="bbb"/>
