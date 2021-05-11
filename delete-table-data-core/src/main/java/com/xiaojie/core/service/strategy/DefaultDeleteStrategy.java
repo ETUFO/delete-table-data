@@ -33,6 +33,7 @@ public class DefaultDeleteStrategy extends AbstractDeleteStrategy {
                 paramValue = list.stream().map(map -> map.get("id")).collect(Collectors.toList());
             }
         }
-        return dataOperation.delete(table.getTableName(), "id", paramValue);
+        return deleteData(table.getTableName(), "id", paramValue);
+//        return dataOperation.delete(table.getTableName(), "id", paramValue);
     }
 }

@@ -7,7 +7,9 @@ import com.xiaojie.core.dao.Param;
 import com.xiaojie.core.exception.DeleteParamException;
 import com.xiaojie.core.parse.model.DeleteParam;
 import com.xiaojie.core.parse.model.RemoveDataTable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,10 +21,14 @@ import java.util.Map;
  * @classname DeleteParamStrategy
  * @date 2020/12/18 16:46
  **/
+@Slf4j
 @Component
 public class DeleteByParamStrategy extends AbstractDeleteStrategy {
-    @Autowired
-    private DataOperation dataOperation;
+
+//    @Autowired
+//    public DeleteByParamStrategy(@Qualifier("dataOperation") DataOperation dataOperation){
+//        super.dataOperation = dataOperation;
+//    }
 
     @Override
     public int delete(Map paramMap, RemoveDataTable table,Map<String,List<Map>> deleteDataMap) {
@@ -37,6 +43,6 @@ public class DeleteByParamStrategy extends AbstractDeleteStrategy {
             param.setValue(value);
             paramList.add(param);
         }
-        return dataOperation.delete(table.getTableName(),paramList);
+        return deleteData(table.getTableName(),paramList);
     }
 }

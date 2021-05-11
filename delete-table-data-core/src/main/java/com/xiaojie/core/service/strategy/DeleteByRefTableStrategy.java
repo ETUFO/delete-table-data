@@ -42,6 +42,6 @@ public class DeleteByRefTableStrategy extends AbstractDeleteStrategy {
             param.setValue(list);
             deleteParams.add(param);
         }
-        return dataOperation.delete(table.getTableName(), deleteParams);
+        return deleteData(table.getTableName(), deleteParams);
     }
 }
