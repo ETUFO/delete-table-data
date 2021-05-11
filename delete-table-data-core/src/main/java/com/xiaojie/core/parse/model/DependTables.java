@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class DependTables implements Serializable {
 
+    private static final long serialVersionUID = 7003423277116581548L;
+
     @XmlElement(name = "depend-table")
     private List<DependTable> dependTableList;
 

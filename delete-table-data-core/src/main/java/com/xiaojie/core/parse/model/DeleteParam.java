@@ -12,6 +12,8 @@ import java.io.Serializable;
  **/
 public class DeleteParam implements Serializable {
 
+    private static final long serialVersionUID = -3611223481319920635L;
+
     @XmlAttribute(name = "param-name")
     private String paramName;
     @XmlAttribute(name = "field-name")

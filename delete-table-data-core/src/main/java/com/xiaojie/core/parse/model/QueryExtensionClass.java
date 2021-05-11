@@ -10,6 +10,9 @@ import java.io.Serializable;
  * @date 2020/12/17 14:37
  **/
 public class QueryExtensionClass implements Serializable {
+
+    private static final long serialVersionUID = -927993573678054472L;
+
     @XmlAttribute(name = "bean-name")
     private String beanName;
 

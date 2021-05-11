@@ -1,6 +1,7 @@
 package com.xiaojie.core.cache.impl;
 
 import com.xiaojie.core.cache.Cache;
+import com.xiaojie.core.parse.model.RemoveDataTables;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,18 +12,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @classname DefaultCacheImpl
  * @date 2020/12/16 15:31
  **/
-@Component
+@Component("defaultCacheImpl")
 public class DefaultCacheImpl implements Cache {
 
-    private final static ConcurrentHashMap<String,String> MAP = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<String,RemoveDataTables> MAP = new ConcurrentHashMap<>();
 
     @Override
-    public String get(String fileName) {
+    public RemoveDataTables get(String fileName) {
         return MAP.get(fileName);
     }
 
     @Override
-    public void save(String fileName, String model) {
-        MAP.putIfAbsent(fileName,model);
+    public void save(String key, RemoveDataTables tables) {
+        MAP.putIfAbsent(key,tables);
     }
 }

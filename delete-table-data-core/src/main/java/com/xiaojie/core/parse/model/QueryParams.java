@@ -15,7 +15,9 @@ import java.util.List;
 @ToString
 public class QueryParams implements Serializable {
 
-   @XmlElement(name = "query-param")
+    private static final long serialVersionUID = -8259784030280554620L;
+
+    @XmlElement(name = "query-param")
    private List<QueryParam> paramList;
 
     @XmlTransient

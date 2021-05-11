@@ -14,6 +14,8 @@ import java.io.Serializable;
 @ToString
 public class QueryParam implements Serializable {
 
+    private static final long serialVersionUID = 4124569940631752502L;
+
     @XmlAttribute(name = "param-name")
     private String paramName;
     @XmlAttribute(name = "field-name")

@@ -12,6 +12,8 @@ import java.util.List;
  **/
 public class DeleteParams implements Serializable {
 
+    private static final long serialVersionUID = -7233315051790577399L;
+
     @XmlElement(name = "delete-param")
     private List<DeleteParam> deleteParams;
 

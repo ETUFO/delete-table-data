@@ -3,6 +3,7 @@ package com.xiaojie.core.parse.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 
 /**
  * 删除的表
@@ -10,7 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @classname RemoveDataTable
  * @date 2020/12/14 10:23
  **/
-public class RemoveDataTable {
+public class RemoveDataTable implements Serializable {
 
     @XmlAttribute(name = "table-name")
     private String tableName;

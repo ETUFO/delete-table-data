@@ -19,6 +19,8 @@ import java.util.List;
 @XmlRootElement(name = "tables")
 public class RemoveDataTables implements Serializable {
 
+    private static final long serialVersionUID = 6444497515554829448L;
+
     @XmlElement(name = "table")
     private List<RemoveDataTable> removeDataTableList;
 

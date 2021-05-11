@@ -18,8 +18,10 @@ import com.xiaojie.core.parse.model.RemoveDataTables;
 import com.xiaojie.core.toolkits.CustSpringContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +39,7 @@ public class DeleteService {
 
     @Autowired
     private DeleteTableDataProperties deleteTableDataProperties;
-    @Autowired
+    @Resource(name = "defaultCacheImpl")
     private Cache defualtCache;
 
 
@@ -118,12 +120,10 @@ public class DeleteService {
     private RemoveDataTables getRemoveDataTables(String fileName) {
         String cacheName = deleteTableDataProperties.getCache();
         Cache cache = StringUtils.isBlank(cacheName) ? defualtCache : CustSpringContextUtil.getBean(cacheName);
-        String json = cache.get(fileName);
-        RemoveDataTables removeDataTables = null;
-        if (StringUtils.isNotBlank(json)) {
-            removeDataTables = JSON.parseObject(json, RemoveDataTables.class);
-        } else {
+        RemoveDataTables removeDataTables = cache.get(fileName);
+        if (removeDataTables == null) {
             removeDataTables = RemoveExamDataXmlParse.getRemoveDataTables(fileName);
+            cache.save(fileName,removeDataTables);
         }
         if (removeDataTables == null) {
             throw new RuntimeException("获取配置文件错误");

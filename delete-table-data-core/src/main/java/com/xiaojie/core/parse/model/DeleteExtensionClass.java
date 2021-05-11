@@ -11,6 +11,8 @@ import java.io.Serializable;
  **/
 public class DeleteExtensionClass implements Serializable {
 
+    private static final long serialVersionUID = -1028835421871106024L;
+
     @XmlAttribute(name = "bean-name")
     private String beanName;
 

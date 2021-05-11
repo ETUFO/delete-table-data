@@ -1,5 +1,8 @@
 package com.xiaojie.core.cache;
 
+import com.xiaojie.core.parse.model.RemoveDataTable;
+import com.xiaojie.core.parse.model.RemoveDataTables;
+
 /**
  * 缓存接口
  *
@@ -9,7 +12,7 @@ package com.xiaojie.core.cache;
  **/
 public interface Cache {
 
-    String get(String fileName);
+    RemoveDataTables get(String fileName);
 
-    void save(String fileName, String model);
+    void save(String key, RemoveDataTables tables);
 }

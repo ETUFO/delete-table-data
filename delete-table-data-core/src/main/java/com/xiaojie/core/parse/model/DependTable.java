@@ -15,6 +15,8 @@ import java.io.Serializable;
 @ToString
 public class DependTable implements Serializable {
 
+    private static final long serialVersionUID = -6125224847544956724L;
+
     @XmlAttribute(name = "table-name")
     private String tableName;
 
