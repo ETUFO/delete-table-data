@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 删除抽象逻辑11
+ * 删除抽象逻辑
  *
  * @author wangye
  * @classname AbstractDeleteStrategy
