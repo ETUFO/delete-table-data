@@ -36,8 +36,9 @@ public abstract class AbstractDeleteStrategy implements DeleteStrategy {
 
     private boolean checkParam(Object param, String tableName) {
         if (param != null) {
-            if (param instanceof Collection
-                    && CollectionUtil.isNotEmpty((Collection) param)) {
+            if (!(param instanceof Collection)) {
+                return true;
+            } else if (CollectionUtil.isNotEmpty((Collection) param)) {
                 return true;
             }
         }
