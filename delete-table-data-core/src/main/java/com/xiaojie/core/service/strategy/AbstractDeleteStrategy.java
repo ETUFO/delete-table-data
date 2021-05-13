@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 删除抽象逻辑
  *
- * @author wangye
+ * @author wangye123
  * @classname AbstractDeleteStrategy
  * @date 2020/12/18 16:26
  **/
