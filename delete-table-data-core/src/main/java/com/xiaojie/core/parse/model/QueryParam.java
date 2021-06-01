@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**
- * @author wangye1
+ * @author wangye
  * @classname QueryParam
  * @date 2020/12/17 14:03
  **/
